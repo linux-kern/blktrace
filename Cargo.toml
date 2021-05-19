@@ -1,0 +1,11 @@
+[package]
+name = "blktrace"
+version = "0.1.0"
+authors = ["Norman Kern <norman.kern@gmx.com>"]
+edition = "2018"
+license = "GPL-3.0-or-later"
+description = "This is a rust version for blktrace."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
