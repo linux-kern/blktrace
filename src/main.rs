@@ -1,12 +1,14 @@
 use clap::{App, Arg, ArgMatches};
+use std::fs::File;
 
-fn handle_opts<'a>() -> ArgMatches<'a> {
+fn handle_args<'a>(ctx: &'a mut BlktraceCtx) {
     let blktrace_about = format!(
         "\n{} \n\t{}",
         "THIS IS A RUST VERSION OF BLKTRACE WRITEN BY", "Jens Axboe <axboe@kernel.dk>"
     );
 
-    let matches = App::new("Block IO Tracing")
+    ctx.matches = App::new("Block IO Tracing")
+        .bin_name("blktrace")
         .version("2.0.0")
         .author("Norman Kern <norman.kern@gmx.com>")
         .about(&blktrace_about[..])
@@ -15,6 +17,7 @@ fn handle_opts<'a>() -> ArgMatches<'a> {
                 .short("d")
                 .long("dev")
                 .takes_value(true)
+                .multiple(true)
                 .help("Use specified device. May also be given last after options"),
         )
         .arg(
@@ -111,9 +114,28 @@ fn handle_opts<'a>() -> ArgMatches<'a> {
         )
         .get_matches();
 
-    matches
+    let devices: Vec<&str> = ctx.matches.values_of("dev").unwrap().collect();
+
+    println!("Values: {:?}", devices);
+}
+
+pub struct BlktraceCtx<'a> {
+    pub devices: Vec<&'a str>,
+    pub devpaths: Vec<DevPath>,
+    matches: ArgMatches<'a>,
+}
+
+pub struct DevPath {
+    pub path: String,
+    pub file: File,
 }
 
 fn main() {
-    handle_opts();
+    let mut blktrace_ctx = BlktraceCtx {
+        devices: Vec::new(),
+        devpaths: Vec::new(),
+        matches: ArgMatches::new(),
+    };
+
+    handle_args(&mut blktrace_ctx);
 }
